@@ -2,9 +2,9 @@
 
 require 'open3'
 
-# Run a test for assignment 1.
-# The ASSIGN01_DIR environment variable must be set to the directory
-# containing the "minicalc" executable.
+# Run a test for assignment 2.
+# The ASSIGN02_DIR environment variable must be set to the directory
+# containing the "interp" executable.
 
 # ----------------------------------------------------------------------
 # Functions
@@ -103,11 +103,11 @@ end
 # Main script
 # ----------------------------------------------------------------------
 
-raise 'ASSIGN01_DIR environment variable must be set' if !ENV.has_key?('ASSIGN01_DIR')
-exe_dir = ENV['ASSIGN01_DIR']
+raise 'ASSIGN02_DIR environment variable must be set' if !ENV.has_key?('ASSIGN02_DIR')
+exe_dir = ENV['ASSIGN02_DIR']
 
 # make sure executable exists
-exe = "#{exe_dir}/minicalc"
+exe = "#{exe_dir}/interp"
 raise "#{exe} is not executable" if !FileTest.executable?(exe)
 
 # see if there an option argument was specified on the command line
@@ -140,7 +140,12 @@ end
 # Run the executable on the named test
 cmd = [exe, input_file]
 #puts "cmd is: #{cmd.join(' ')}"
-stdout_str, stderr_str, status = Open3.capture3(*cmd, stdin_data: '')
+stdin_data = ''
+if FileTest.readable?("data/#{testname}.in")
+  # A data file exists, so send it as standard input to the program
+  stdin_data = File.read("data/#{testname}.in")
+end
+stdout_str, stderr_str, status = Open3.capture3(*cmd, stdin_data: stdin_data)
 if !status.exited?
   puts "Test command failed"
   if !stderr_str.empty?
